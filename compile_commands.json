@@ -1,0 +1,7 @@
+[
+  {
+    "directory": "${workspaceFolder}",
+    "command": "gcc -shared -fPIC -o libsudoku.so c/sudoku.c",
+    "file": "c/sudoku.c"
+  }
+] 

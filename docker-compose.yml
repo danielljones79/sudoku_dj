@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+    networks:
+      - sudoku-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://backend:8081
+    depends_on:
+      - backend
+    networks:
+      - sudoku-network
+
+networks:
+  sudoku-network:
+    driver: bridge 

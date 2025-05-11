@@ -1,0 +1,708 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  background-color: #f5f5f5;
+}
+
+.App {
+  text-align: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  gap: 20px;
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.loading {
+  margin: 20px 0;
+  font-style: italic;
+  color: #666;
+}
+
+.board-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 0 0;
+}
+
+.board {
+  display: inline-block;
+  border: 3px solid #000;
+  background-color: #f8f8f8;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.board::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border: 5px solid transparent;
+  pointer-events: none;
+  z-index: -1;
+  transition: border-color 0.3s;
+}
+
+body:has(.notes-toggle.active) .board::before {
+  border-color: rgba(76, 175, 80, 0.5);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+}
+
+.row {
+  display: flex;
+  height: 50px;
+}
+
+/* Add thicker borders for 3x3 grid separation */
+.row:nth-child(3n) {
+  border-bottom: 3px solid #000;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Add thicker borders for 3x3 grid separation */
+.cell:nth-child(3n) {
+  border-right: 3px solid #000;
+}
+
+.cell:last-child {
+  border-right: 1px solid #ccc;
+}
+
+/* First column left border */
+.cell:first-child {
+  border-left: 1px solid #ccc;
+}
+
+/* First row top border */
+.row:first-child .cell {
+  border-top: 1px solid #ccc;
+}
+
+/* Cell input styling */
+.cell input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  text-align: center;
+  font-size: 24px;
+  background: transparent;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  caret-color: #4a90e2;
+}
+
+/* Selected cell styling */
+.cell.selected {
+  background-color: rgba(74, 144, 226, 0.15);
+  box-shadow: inset 0 0 0 2px #4a90e2;
+  z-index: 1;
+}
+
+/* Enhance selected cell in notes mode */
+body:has(.notes-toggle.active) .cell.selected {
+  background-color: rgba(76, 175, 80, 0.15);
+  box-shadow: inset 0 0 0 2px #4caf50;
+  z-index: 1;
+}
+
+/* Static (pre-filled) cells */
+.static input {
+  font-weight: bold;
+  color: #333;
+  background-color: #e0e0e0;
+}
+
+/* Validation styling */
+.correct input {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.wrong input {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.error {
+  color: #f44336;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #3a7bc8;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+input[type="number"] {
+  margin: 0;
+  padding: 8px;
+  width: 50px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Puzzle List Styling */
+.puzzle-list {
+  margin: 0;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.puzzle-list h2 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.puzzle-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+  flex-grow: 1;
+  max-height: none;
+}
+
+.puzzle-list li {
+  margin-bottom: 10px;
+}
+
+/* Update puzzle item layout to include delete button */
+.puzzle-item {
+  display: flex;
+  align-items: stretch;
+}
+
+.load-puzzle-btn {
+  flex-grow: 1;
+  text-align: left;
+  padding: 12px;
+  font-size: 14px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin: 0;
+}
+
+.load-puzzle-btn:hover {
+  background-color: #555;
+}
+
+.delete-puzzle-btn {
+  width: 40px;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  padding: 0;
+  margin: 0 0 0 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-puzzle-btn:hover {
+  background-color: #f44336;
+}
+
+/* Delete confirmation dialog */
+.delete-confirmation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  text-align: center;
+  max-width: 90%;
+  width: 400px;
+}
+
+.delete-confirmation p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.delete-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.delete-confirm {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-confirm:hover {
+  background-color: #f44336;
+}
+
+.delete-cancel {
+  background-color: #757575;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-cancel:hover {
+  background-color: #9e9e9e;
+}
+
+.puzzle-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.puzzle-id {
+  font-weight: bold;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+.puzzle-date {
+  font-size: 13px;
+  color: #ccc;
+}
+
+.puzzle-difficulty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.difficulty-bar {
+  height: 8px;
+  width: 100px;
+  background-color: #555;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-left: 10px;
+}
+
+.difficulty-level {
+  height: 100%;
+  background-color: #f44336;
+  border-radius: 4px;
+}
+
+/* Notes Mode Toggle Styling */
+.notes-toggle {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition: background-color 0.3s, border-color 0.3s;
+  box-sizing: border-box;
+  background-color: #f8f8f8;
+}
+
+.notes-toggle.active {
+  background-color: #e8f5e9;
+  border-color: #4caf50;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: #4caf50;
+}
+
+/* Checked state position */
+input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+/* Notes Grid Styling */
+.has-notes {
+  padding: 0;
+  cursor: pointer;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+}
+
+.note-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #666;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  border: 1px solid transparent;
+}
+
+.note-cell:hover {
+  background-color: rgba(74, 144, 226, 0.1);
+}
+
+.note-visible {
+  font-weight: bold;
+  color: #4a90e2;
+}
+
+/* Notes cells in selected cell */
+.cell.selected .note-cell:hover {
+  background-color: rgba(74, 144, 226, 0.2);
+}
+
+.cell.selected .note-cell.note-visible {
+  color: #2a70c2;
+}
+
+/* Notes cells in selected cell when in notes mode */
+body:has(.notes-toggle.active) .cell.selected .note-cell:hover {
+  background-color: rgba(76, 175, 80, 0.2);
+}
+
+body:has(.notes-toggle.active) .cell.selected .note-cell.note-visible {
+  color: #3a9f40;
+}
+
+/* Highlighted cells (cells with same value) */
+.cell.highlighted {
+  background-color: rgba(74, 144, 226, 0.15);
+}
+
+/* Highlighted cells when in notes mode */
+body:has(.notes-toggle.active) .cell.highlighted {
+  background-color: rgba(76, 175, 80, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 650px) {
+  .controls {
+    flex-direction: column;
+  }
+  
+  .puzzle-item {
+    flex-direction: row;
+  }
+  
+  .load-puzzle-btn {
+    padding: 8px;
+  }
+  
+  .delete-puzzle-btn {
+    width: 30px;
+  }
+  
+  .puzzle-info {
+    flex-direction: column;
+    gap: 3px;
+  }
+  
+  .puzzle-difficulty {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .difficulty-bar {
+    width: 100%;
+    margin-left: 0;
+  }
+  
+  .cell {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .cell input {
+    font-size: 18px;
+  }
+  
+  .row {
+    height: 30px;
+  }
+  
+  .notes-grid {
+    grid-template: repeat(3, 8px) / repeat(3, 8px);
+  }
+  
+  .notes-toggle {
+    width: auto;
+  }
+  
+  .toggle-switch {
+    width: 40px;
+    height: 20px;
+  }
+  
+  .toggle-slider:before {
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+  }
+  
+  input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+  }
+  
+  .toggle-label {
+    font-size: 12px;
+  }
+}
+
+/* Add main content layout */
+.main-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.board-section {
+  flex: 3;
+  margin-right: 20px;
+}
+
+.puzzle-list-section {
+  flex: 2;
+  max-width: 300px;
+  position: sticky;
+  top: 20px;
+  height: calc(100vh - 180px);
+  overflow: hidden;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .board-section {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+  
+  .puzzle-list-section {
+    max-width: none;
+    width: 100%;
+    height: 300px;
+    position: relative;
+  }
+  
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .difficulty-control {
+    justify-content: center;
+  }
+  
+  .board-controls {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .validate-btn, .save-btn, .generate-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .notes-toggle {
+    justify-content: center;
+  }
+}
+
+/* Add a general style for toggle-label that's not just in the media query */
+.toggle-label {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.toggle-label strong {
+  display: inline-block;
+  width: 55px; /* Fixed width for the ON/OFF text */
+  text-align: left;
+}
+
+.keyboard-shortcut {
+  display: inline-block;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.difficulty-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.board-controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.validate-btn, .save-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  min-width: 160px;
+}
+
+.validate-btn {
+  background-color: #4a90e2;
+}
+
+.save-btn {
+  background-color: #4caf50;
+}
+
+.generate-btn {
+  background-color: #6a5acd;
+  padding: 10px 20px;
+  min-width: 160px;
+}
+
+.save-btn:hover {
+  background-color: #3d9c40;
+}
+
+.generate-btn:hover {
+  background-color: #5849b8;
+} 

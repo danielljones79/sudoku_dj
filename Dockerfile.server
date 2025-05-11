@@ -1,0 +1,36 @@
+# Use the official Go image as the base image
+FROM golang:1.21-alpine
+
+# Install build dependencies
+RUN apk add --no-cache gcc musl-dev
+
+# Set working directory
+WORKDIR /app
+
+# Copy go mod file
+COPY go.mod ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy the source code and C files
+COPY . .
+
+# Build the C library first
+RUN gcc -shared -fPIC -o /app/libsudoku.so c/sudoku.c
+
+# Set environment variables for CGO
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV LD_LIBRARY_PATH=/app
+ENV CGO_LDFLAGS="-L/app -lsudoku"
+
+# Build the Go application
+RUN go build -o main .
+
+# Expose the port the app runs on
+EXPOSE 8081
+
+# Command to run the application
+CMD ["./main"] 
